@@ -67,11 +67,21 @@ class SmartphoneInferenceEngine:
     def _initialize_model(self) -> None:
         """Initialize the inference model.
 
-        - If project‑specific weights and class mapping exist, load them (the usual path).
-        - Otherwise, fall back to the vanilla ImageNet‑pretrained MobileNetV2 model with
-          the original 1000‑class head. This allows the demo pages to run predictions
-          even when the custom training artefacts are missing.
+        - In serverless mode (e.g. Vercel), if TensorFlow is not installed,
+          initialize safely in serverless standby mode.
+        - If project‑specific weights and class mapping exist and TensorFlow is available,
+          load them (the standard path).
+        - Otherwise, fall back to the vanilla ImageNet‑pretrained MobileNetV2 model.
         """
+        if tf is None:
+            self.is_ready = False
+            self.load_error = (
+                "Serverless mode active: TensorFlow is not installed in this environment. "
+                "For local model training and inference, run with 'python app.py' or Docker."
+            )
+            logger.info(self.load_error)
+            return
+
         # ---------- Try loading project‑specific artefacts ----------
         if self.weights_path and self.weights_path.exists() and \
            self.class_names_path and self.class_names_path.exists():
@@ -92,9 +102,10 @@ class SmartphoneInferenceEngine:
                 return
             except Exception as e:
                 logger.error(f"Custom model load failed: {e}. Falling back to ImageNet pretrained model.")
+
         # ---------- Fallback to ImageNet pretrained MobileNetV2 ----------
-        from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, decode_predictions
         try:
+            from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, decode_predictions
             fallback_model = MobileNetV2(weights='imagenet', include_top=True)
             self.model = fallback_model
             # Store the decode function for later use in predictions
@@ -138,8 +149,6 @@ class SmartphoneInferenceEngine:
         - Applies MobileNetV2 scaling: scales values from [0, 255] to [-1, 1].
         - Adds batch dimension: shape (1, 224, 224, 3).
         """
-        from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-
         try:
             if isinstance(image_input, (str, Path)):
                 img = Image.open(str(image_input))
@@ -162,8 +171,8 @@ class SmartphoneInferenceEngine:
             # Convert to numpy array float32
             img_array = np.array(img, dtype=np.float32)
 
-            # MobileNetV2 preprocessing: (x / 127.5) - 1.0
-            processed = preprocess_input(img_array)
+            # MobileNetV2 standard preprocessing formula: (x / 127.5) - 1.0
+            processed = (img_array / 127.5) - 1.0
 
             # Expand batch dimension
             batch_input = np.expand_dims(processed, axis=0)

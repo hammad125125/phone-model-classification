@@ -5,3 +5,4 @@
 tensorflow==2.15.0
 tensorflow-intel==2.15.0; sys_platform == 'win32'
 keras==2.15.0
+
