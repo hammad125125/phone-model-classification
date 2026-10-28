@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Install Python requirements (including TensorFlow & Keras)
-COPY requirements.txt requirements-train.txt ./
+COPY requirements.txt config/requirements-train.txt ./
 RUN pip install --no-cache-dir -r requirements-train.txt
 
 # Copy application source code and artifacts

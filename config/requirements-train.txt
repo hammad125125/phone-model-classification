@@ -1,8 +1,7 @@
 # Deep Learning Training Dependencies (TensorFlow / Keras)
 # Used for local model training, GPU acceleration, and containerized deployment (Docker / Render)
 
--r requirements.txt
+-r ../requirements.txt
 tensorflow==2.15.0
 tensorflow-intel==2.15.0; sys_platform == 'win32'
 keras==2.15.0
-
