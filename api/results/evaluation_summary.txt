@@ -1,17 +1,17 @@
 ============================================================
 MOBILE PHONE CLASSIFICATION - MODEL EVALUATION SUMMARY
 ============================================================
-Test Samples:        15
-Accuracy:            1.0000 (100.00%)
-Macro Precision:     1.0000
-Macro Recall:        1.0000
-Macro F1-Score:      1.0000
-Weighted F1-Score:   1.0000
+Test Samples:        150
+Accuracy:            0.9733 (97.33%)
+Macro Precision:     0.9733
+Macro Recall:        0.9733
+Macro F1-Score:      0.9733
+Weighted F1-Score:   0.9733
 ------------------------------------------------------------
 PER-CLASS CLASSIFICATION REPORT:
-  Apple_iPhone         Prec: 1.000 | Rec: 1.000 | F1: 1.000 | Support: 3.0
-  Google_Pixel         Prec: 1.000 | Rec: 1.000 | F1: 1.000 | Support: 3.0
-  OnePlus              Prec: 1.000 | Rec: 1.000 | F1: 1.000 | Support: 3.0
-  Samsung_Galaxy       Prec: 1.000 | Rec: 1.000 | F1: 1.000 | Support: 3.0
-  Xiaomi_Redmi         Prec: 1.000 | Rec: 1.000 | F1: 1.000 | Support: 3.0
+  Apple_iPhone         Prec: 0.9667 | Rec: 0.9667 | F1: 0.9667 | Support: 30.0
+  Google_Pixel         Prec: 1.0000 | Rec: 1.0000 | F1: 1.0000 | Support: 30.0
+  OnePlus              Prec: 0.9667 | Rec: 0.9667 | F1: 0.9667 | Support: 30.0
+  Samsung_Galaxy       Prec: 0.9667 | Rec: 0.9667 | F1: 0.9667 | Support: 30.0
+  Xiaomi_Redmi         Prec: 0.9667 | Rec: 0.9667 | F1: 0.9667 | Support: 30.0
 ============================================================
