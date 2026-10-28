@@ -10,9 +10,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = BASE_DIR / "config"
 SRC_DIR = BASE_DIR / "src"
-MODELS_DIR = BASE_DIR / "models"
+
+_possible_models = [BASE_DIR / "models", BASE_DIR / "api" / "models", Path("models"), Path("api/models")]
+MODELS_DIR = next((d for d in _possible_models if d.exists()), BASE_DIR / "models")
+
 DATASET_DIR = BASE_DIR / "dataset"
-RESULTS_DIR = BASE_DIR / "results"
+
+_possible_results = [BASE_DIR / "results", BASE_DIR / "api" / "results", Path("results"), Path("api/results")]
+RESULTS_DIR = next((d for d in _possible_results if d.exists()), BASE_DIR / "results")
+
 STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 DOCS_DIR = BASE_DIR / "docs"

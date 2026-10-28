@@ -80,6 +80,14 @@ class SmartphoneInferenceEngine:
                 "For local model training and inference, run with 'python app.py' or Docker."
             )
             logger.info(self.load_error)
+            if self.class_names_path and self.class_names_path.exists():
+                try:
+                    with open(self.class_names_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        self.class_names = data.get("classes", [])
+                        self.class_mapping = data
+                except Exception as e:
+                    logger.warning(f"Could not load class names from file: {e}")
             return
 
         # ---------- Try loading project‑specific artefacts ----------

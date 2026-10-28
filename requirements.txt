@@ -1,14 +1,9 @@
 # Mobile Phone Model Classification - Application & Web Dependencies
-# Compatible with Vercel Serverless Functions, Docker, and Local Environments
+# Optimized for Vercel Serverless Functions, Docker, and Production Web Serving
 
 Flask>=3.0.0
 Flask-Cors>=4.0.0
 Werkzeug>=3.0.0
 Pillow>=10.0.0
 numpy>=1.26.0
-pandas>=2.0.0
-scikit-learn>=1.3.0
-matplotlib>=3.8.0
 requests>=2.31.0
-pytest>=8.0.0
-gunicorn>=21.2.0; sys_platform != 'win32'
