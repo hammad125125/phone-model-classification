@@ -42,7 +42,11 @@ from src.inference import SmartphoneInferenceEngine
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("WebApp")
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=str(PROJECT_ROOT / "templates"),
+    static_folder=str(PROJECT_ROOT / "static")
+)
 app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "academic-deep-learning-secret-key-2026")
 CORS(app)
@@ -307,9 +311,19 @@ def request_entity_too_large(error):
 
 @app.errorhandler(500)
 def internal_server_error(error):
+    import traceback
+    tb = traceback.format_exc()
+    logger.error(f"500 Internal Error: {tb}")
     if request.path.startswith("/api/"):
-        return jsonify({"success": False, "error": "Internal server error"}), 500
-    return "<h3>Internal Server Error</h3>", 500
+        return jsonify({"success": False, "error": str(error), "traceback": tb}), 500
+    return f"""
+    <div style="font-family:sans-serif; padding:2rem; max-width:800px; margin:auto;">
+      <h2 style="color:#ef4444;">Application Error (500)</h2>
+      <p><strong>{error}</strong></p>
+      <pre style="background:#f1f5f9; padding:1rem; border-radius:6px; overflow:auto;">{tb}</pre>
+      <a href="/" style="display:inline-block; margin-top:1rem; color:#2563eb;">Return to Home</a>
+    </div>
+    """, 500
 
 
 if __name__ == "__main__":
