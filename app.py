@@ -68,7 +68,7 @@ app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "academic-deep-learning-secret-key-2026")
 CORS(app)
 
-INFERENCE_API_URL = os.environ.get("INFERENCE_API_URL", "").rstrip("/")
+INFERENCE_API_URL = os.environ.get("API_URL", os.environ.get("INFERENCE_API_URL", "")).rstrip("/")
 
 # Initialize in-memory singleton inference engine
 engine = SmartphoneInferenceEngine(
