@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Smartphone Classifier | Mobile Phone Model Classification{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;">Interactive Smartphone Classifier</h1>
+  <p style="color: var(--text-muted);">
+    Upload or drag-and-drop a photograph of a mobile device to run deep learning inference through our fine-tuned MobileNetV2 pipeline.
+  </p>
+</div>
+
+{% if not status.model_ready %}
+<div class="alert alert-warning">
+  <strong>Model Status: Pending Training / Checkpoint Not Loaded</strong><br>
+  The classification engine has not detected trained weights at <code>models/mobile_model.weights.h5</code>.<br>
+  To initiate training with the current dataset, run in your terminal:
+  <pre style="margin-top: 0.5rem;"><code>python train.py</code></pre>
+</div>
+{% endif %}
+
+<div id="errorAlert" class="alert alert-danger" style="display: none;"></div>
+
+<div class="demo-container">
+  <!-- Left Column: Upload & Preview -->
+  <div>
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-icon">📷</div>
+      <h3 style="font-size: 1.15rem; color: var(--secondary); margin-bottom: 0.4rem;">Upload Smartphone Image</h3>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
+        Drag &amp; drop an image here or click to browse files
+      </p>
+      <button type="button" class="btn btn-outline" style="pointer-events: none;">Select Image</button>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/bmp" style="display: none;">
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.75rem;">
+        Supported formats: JPG, PNG, WEBP &bull; Max file size: 16 MB
+      </p>
+    </div>
+
+    <!-- Image Preview Area -->
+    <div class="preview-container" id="previewContainer">
+      <h4 style="font-size: 0.95rem; color: var(--secondary); margin-bottom: 0.5rem;">Uploaded Image Preview</h4>
+      <img id="previewImage" class="preview-img" alt="Preview">
+    </div>
+
+    <!-- Quick Sample Gallery -->
+    {% if sample_images %}
+    <div style="margin-top: 1.5rem;">
+      <h4 style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">
+        Quick-Select Test Calibration Samples:
+      </h4>
+      <div class="sample-gallery">
+        {% for img_name in sample_images %}
+        <img src="{{ url_for('serve_sample_image', filename=img_name) }}" 
+             data-src="{{ url_for('serve_sample_image', filename=img_name) }}" 
+             class="sample-thumb" 
+             alt="{{ img_name }}" 
+             title="Test {{ img_name }}">
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right Column: Inference Result -->
+  <div>
+    <!-- Loading State -->
+    <div id="loadingIndicator" class="alert alert-info" style="display: none; text-align: center;">
+      Running MobileNetV2 Deep Learning Inference...
+    </div>
+
+    <!-- Prediction Output -->
+    <div id="resultCard" class="result-box" style="display: none;">
+      <div class="prediction-highlight">
+        <div class="prediction-label">Primary Predicted Class</div>
+        <div class="prediction-class" id="resPredictedClass">Device Brand</div>
+        <div class="prediction-conf" id="resConfidence">0.00% Model Probability</div>
+        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;" id="resInferenceTime">
+          Inference latency: -- ms
+        </div>
+      </div>
+
+      <h4 style="font-size: 1rem; color: var(--secondary); margin-bottom: 1rem;">Top-3 Class Probability Distribution</h4>
+      <div id="resTopBreakdown">
+        <!-- Dynamic bars inserted via JavaScript -->
+      </div>
+
+      <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 1rem;">
+          <strong>Academic Disclaimer:</strong> The confidence score represents the normalized softmax probability output across classes present in the training set. It does not constitute a hardware certification or an absolute guarantee of real-world device identification.
+        </p>
+        <button id="resetBtn" class="btn btn-outline" style="width: 100%;">Classify Another Image</button>
+      </div>
+    </div>
+
+    <!-- Default Helper Placeholder -->
+    <div id="placeholderCard" class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1.5rem;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔍</div>
+      <h3 style="font-size: 1.1rem; color: var(--secondary); margin-bottom: 0.5rem;">Awaiting Input</h3>
+      <p style="font-size: 0.9rem;">
+        Select or drag a photo into the box on the left to inspect the model's predictions and probability breakdown.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Project Documentation | Mobile Phone Model Classification{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;">Academic Project Documentation</h1>
+  <p style="color: var(--text-muted);">
+    Comprehensive breakdown of problem formulation, engineering methodology, architectural decisions, and constraints.
+  </p>
+</div>
+
+<div class="grid grid-2" style="margin-bottom: 2rem;">
+  <!-- Problem Statement -->
+  <div class="card">
+    <h2 class="card-title"><span>🎯</span> Problem Statement</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Smartphones share increasingly homogeneous industrial form factors: rectangular glass slabs, curved metallic edges, and minimal front bezels. Distinguishing exact phone models or brands visually requires recognizing subtle micro-features—such as camera island geometries, sensor alignments, notch dimensions, and flash positions. Developing a lightweight, edge-deployable deep learning classifier capable of robust categorization under variable lighting, angles, and phone cases is an open practical challenge.
+    </p>
+  </div>
+
+  <!-- Objectives -->
+  <div class="card">
+    <h2 class="card-title"><span>📌</span> Semester Objectives</h2>
+    <ul style="color: var(--text-muted); font-size: 0.95rem; padding-left: 1.25rem; line-height: 1.7;">
+      <li>Curate and partition an image dataset into strictly disjoint training, validation, and testing splits.</li>
+      <li>Implement transfer learning leveraging ImageNet pretrained MobileNetV2 feature representations.</li>
+      <li>Design and optimize a task-specific classification head with regularized dense layers and dropout.</li>
+      <li>Formulate a reproducible training and evaluation pipeline with quantitative classification metrics.</li>
+      <li>Deploy a modular, production-ready web inference application and REST API.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Methodology & System Architecture -->
+<section class="card" style="margin-bottom: 2rem;">
+  <h2 class="card-title"><span>🔬</span> Methodology &amp; Engineering Pipeline</h2>
+  <div style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;">
+    <p style="margin-bottom: 1rem;">
+      <strong>1. Preprocessing &amp; Data Pipeline:</strong> Images are verified using PIL to eliminate corrupted headers and 0-byte artifacts. Each image is scaled to 224&times;224 resolution using bicubic interpolation and normalized to the range \([-1, 1]\). Training datasets undergo data augmentation (random flips, rotations of &plusmn;12%, zooms of &plusmn;10%, and contrast adjustments) to prevent overfitting.
+    </p>
+    <p style="margin-bottom: 1rem;">
+      <strong>2. Backbone Network:</strong> MobileNetV2 was chosen over ResNet-50 and VGG-16 due to its parameter efficiency (3.4M vs 25M+ parameters) and rapid inference time (&lt;50ms on CPU). Its depthwise separable convolutions separate spatial filtering from feature combination.
+    </p>
+    <p style="margin-bottom: 1rem;">
+      <strong>3. Transfer Learning Protocol:</strong> During Phase 1, the pretrained backbone is frozen to prevent gradient explosion from corrupting early visual representations. The custom classification head (GlobalAveragePooling2D &rarr; BatchNorm &rarr; Dropout(0.3) &rarr; Dense(128, ReLU) &rarr; Dropout(0.2) &rarr; Softmax) is trained with Adam (\(\alpha = 10^{-3}\)). In Phase 2, upper residual blocks (layer index &ge; 100) are unlocked and fine-tuned with a lower learning rate (\(\alpha = 10^{-5}\)).
+    </p>
+  </div>
+</section>
+
+<!-- Limitations & Future Work -->
+<div class="grid grid-2" style="margin-bottom: 2rem;">
+  <div class="card">
+    <h2 class="card-title"><span>⚠️</span> Current Limitations</h2>
+    <ul style="color: var(--text-muted); font-size: 0.95rem; padding-left: 1.25rem; line-height: 1.7;">
+      <li>Opaque protective phone cases or heavy skins obscure rear chassis geometry and brand logos.</li>
+      <li>Sub-model differentiation (e.g., iPhone 13 vs iPhone 14 standard editions) is constrained when camera island diagonal layouts are nearly identical without millimeter-level scale references.</li>
+      <li>Severe specular reflections on glossy glass backs can introduce classification noise.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title"><span>🚀</span> Future Work &amp; Extensions</h2>
+    <ul style="color: var(--text-muted); font-size: 0.95rem; padding-left: 1.25rem; line-height: 1.7;">
+      <li>Implement multi-view classification fusing front, back, and side profile images simultaneously.</li>
+      <li>Integrate an attention-based Vision Transformer (ViT) or YOLO-based camera module bounding box detector for localized feature extraction.</li>
+      <li>Quantize model to TensorFlow Lite (INT8 / FP16) for real-time offline inference on Android and iOS devices.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
+

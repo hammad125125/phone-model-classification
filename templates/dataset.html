@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Dataset Documentation | Mobile Phone Model Classification{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;">Dataset Architecture &amp; Management</h1>
+  <p style="color: var(--text-muted);">
+    Details regarding data acquisition, directory taxonomy, split isolation, and license compliance.
+  </p>
+</div>
+
+<!-- Dataset Overview Cards -->
+<section class="grid grid-3" style="margin-bottom: 2rem;">
+  <div class="card">
+    <div style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Target Classes</div>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0.25rem 0;">
+      {{ summary.num_classes|default((summary.classes|default([]))|length) }}
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">Configured brand/model categories</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Total Ingested Images</div>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0.25rem 0;">
+      {{ summary.total_images|default(0) }}
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">Across train, validation, and test splits</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Data Leakage Status</div>
+    {% if summary.leakage_warnings %}
+      <div style="font-size: 1.4rem; font-weight: 700; color: var(--danger); margin: 0.5rem 0;">
+        Warning: Potential Overlap
+      </div>
+    {% else %}
+      <div style="font-size: 1.4rem; font-weight: 700; color: var(--success); margin: 0.5rem 0;">
+        Zero Leakage Verified
+      </div>
+    {% endif %}
+    <div style="font-size: 0.85rem; color: var(--text-muted);">Splits strictly disjoint and independent</div>
+  </div>
+</section>
+
+<!-- Split Distribution Table -->
+<section class="card" style="margin-bottom: 2rem;">
+  <h2 style="font-size: 1.25rem; color: var(--secondary); margin-bottom: 1rem;">Split Breakdown by Class</h2>
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
+      <thead>
+        <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+          <th style="padding: 0.75rem;">Class Name</th>
+          <th style="padding: 0.75rem;">Train Images</th>
+          <th style="padding: 0.75rem;">Validation Images</th>
+          <th style="padding: 0.75rem;">Test Images</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set splits = summary.splits|default({}) %}
+        {% set train_info = splits.train|default({}) %}
+        {% set train_counts = train_info.per_class|default({}) %}
+        {% set val_info = splits.validation|default({}) %}
+        {% set val_counts = val_info.per_class|default({}) %}
+        {% set test_info = splits.test|default({}) %}
+        {% set test_counts = test_info.per_class|default({}) %}
+
+        {% for cls in summary.classes|default([]) %}
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 0.75rem; font-weight: 600; color: var(--secondary);">{{ cls }}</td>
+          <td style="padding: 0.75rem;">{{ train_counts.get(cls, 0) if train_counts.get is defined else train_counts[cls]|default(0) }}</td>
+          <td style="padding: 0.75rem;">{{ val_counts.get(cls, 0) if val_counts.get is defined else val_counts[cls]|default(0) }}</td>
+          <td style="padding: 0.75rem;">{{ test_counts.get(cls, 0) if test_counts.get is defined else test_counts[cls]|default(0) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Legal & Acquisition Sources -->
+<section class="card" style="margin-bottom: 2rem;">
+  <h2 style="font-size: 1.25rem; color: var(--secondary); margin-bottom: 0.75rem;">Dataset Sources &amp; Licensing Information</h2>
+  <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+    To comply with academic integrity, copyright legislation, and platform distribution terms, datasets must be sourced from repositories providing open redistributable licenses.
+  </p>
+
+  <div style="display: grid; gap: 1rem;">
+    <div style="background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      <h3 style="font-size: 1.05rem; color: var(--secondary);">1. Kaggle Mobile Phone Dataset</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0.25rem 0 0.5rem;">
+        URL: <a href="https://www.kaggle.com/datasets/arnabchaki/mobile-phone-dataset" target="_blank" rel="noopener">kaggle.com/datasets/arnabchaki/mobile-phone-dataset</a>
+      </p>
+      <span class="status-pill ready">License: Community Data License Agreement (CDLA-Permissive) / Open Benchmark</span>
+    </div>
+
+    <div style="background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      <h3 style="font-size: 1.05rem; color: var(--secondary);">2. Stanford Online Products (Mobile Electronics Category)</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0.25rem 0 0.5rem;">
+        URL: <a href="https://cvgl.stanford.edu/projects/lifted_struct/" target="_blank" rel="noopener">cvgl.stanford.edu/projects/lifted_struct/</a>
+      </p>
+      <span class="status-pill ready">License: Academic Research &amp; Educational Use</span>
+    </div>
+  </div>
+
+  <h3 style="font-size: 1.05rem; color: var(--secondary); margin-top: 1.5rem; margin-bottom: 0.5rem;">Automated Ingestion &amp; Stratification Commands:</h3>
+  <pre><code># 1. Place raw class folders into dataset/raw/
+# 2. Run automatic partition utility (70% Train, 15% Val, 15% Test):
+python -c "from src.dataset_setup import split_raw_dataset; from pathlib import Path; split_raw_dataset(Path('dataset/raw'), Path('dataset'))"</code></pre>
+</section>
+{% endblock %}

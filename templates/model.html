@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Model Architecture | Mobile Phone Model Classification{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;">Deep Learning Model Architecture</h1>
+  <p style="color: var(--text-muted);">
+    Technical specification of the MobileNetV2 transfer learning architecture, custom head, and evaluation performance.
+  </p>
+</div>
+
+<!-- Architecture Summary Cards -->
+<section class="grid grid-3" style="margin-bottom: 2rem;">
+  <div class="card">
+    <div style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Base Backbone</div>
+    <div style="font-size: 1.5rem; font-weight: 800; color: var(--secondary); margin: 0.25rem 0;">
+      MobileNetV2
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">Pretrained on ImageNet-1K (1.4M images)</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Input Tensor Shape</div>
+    <div style="font-size: 1.5rem; font-weight: 800; color: var(--secondary); margin: 0.25rem 0;">
+      (224, 224, 3)
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">RGB normalized to range [-1.0, 1.0]</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Total Parameters</div>
+    <div style="font-size: 1.5rem; font-weight: 800; color: var(--secondary); margin: 0.25rem 0;">
+      {{ "{:,}".format(model_cfg.total_params|default(2400000)) }}
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+      Trainable: {{ "{:,}".format(model_cfg.trainable_params|default(150000)) }}
+    </div>
+  </div>
+</section>
+
+<!-- Deep Dive: Inverted Residuals & Transfer Learning -->
+<section class="card" style="margin-bottom: 2rem;">
+  <h2 style="font-size: 1.3rem; color: var(--secondary); margin-bottom: 1rem;">MobileNetV2 Mechanics &amp; Transfer Learning</h2>
+  <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+    MobileNetV2 introduces inverted residual blocks and linear bottlenecks. Standard residual blocks expand features, compress them with convolutions, and add skip connections. In contrast, MobileNetV2 uses an <em>expand &rarr; depthwise filter &rarr; project back</em> inverted topology.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.25rem;">
+    <div style="border-left: 3px solid var(--primary); padding-left: 1rem;">
+      <h3 style="font-size: 1.05rem; color: var(--secondary);">1. Depthwise Separable Convolutions</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">
+        Splits standard convolution into a 3&times;3 depthwise spatial filter per channel followed by a 1&times;1 pointwise projection. Reduces computation by approximately 8&times; to 9&times; compared to standard convolutions with minimal accuracy drop.
+      </p>
+    </div>
+
+    <div style="border-left: 3px solid var(--accent); padding-left: 1rem;">
+      <h3 style="font-size: 1.05rem; color: var(--secondary);">2. Two-Stage Training Protocol</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">
+        <strong>Phase 1:</strong> Freeze MobileNetV2 backbone; train custom classification head with Adam (lr=1e-3).<br>
+        <strong>Phase 2:</strong> Unfreeze upper layers (from layer 100 onwards) and fine-tune with a conservative learning rate (lr=1e-5) while freezing BatchNormalization layers.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Genuine Metrics Section -->
+<section class="card" style="margin-bottom: 2rem;">
+  <h2 style="font-size: 1.3rem; color: var(--secondary); margin-bottom: 0.5rem;">Actual Evaluation Metrics (Independent Test Split)</h2>
+  
+  {% if metrics.evaluated %}
+    <div class="grid grid-3" style="margin: 1.5rem 0;">
+      <div style="background: var(--bg-main); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border); text-align: center;">
+        <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Accuracy</span>
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--success);">
+          {{ (metrics.data.accuracy * 100)|round(2) }}%
+        </div>
+      </div>
+      <div style="background: var(--bg-main); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border); text-align: center;">
+        <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Macro F1-Score</span>
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">
+          {{ (metrics.data.macro_f1)|round(4) }}
+        </div>
+      </div>
+      <div style="background: var(--bg-main); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border); text-align: center;">
+        <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Test Set Size</span>
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--secondary);">
+          {{ metrics.data.evaluation_dataset_size }} images
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+      <div>
+        <h3 style="font-size: 1rem; color: var(--secondary); margin-bottom: 0.5rem;">Confusion Matrix Heatmap</h3>
+        <img src="/results/confusion_matrix.png" alt="Confusion Matrix" style="width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      </div>
+      <div>
+        <h3 style="font-size: 1rem; color: var(--secondary); margin-bottom: 0.5rem;">Training &amp; Validation Curves</h3>
+        <img src="/results/training_history.png" alt="Training Curves" style="width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-warning" style="margin-top: 1rem;">
+      <strong>Evaluation Metrics Pending:</strong> {{ metrics.message }}<br>
+      To compute genuine metrics on the independent test split and render the confusion matrix, execute:
+      <pre style="margin-top: 0.5rem;"><code>python evaluate.py</code></pre>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
+

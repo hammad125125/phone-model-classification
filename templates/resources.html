@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Project Resources &amp; Deliverables | Mobile Phone Model Classification{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;">Academic Deliverables &amp; Resources</h1>
+  <p style="color: var(--text-muted);">
+    Access the formal project research report and presentation slide deck submitted for evaluation. Click any deliverable to open or download.
+  </p>
+</div>
+
+<div class="grid grid-2" style="margin-bottom: 2.5rem;">
+  <!-- Project Report Card -->
+  <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: rgba(239, 68, 68, 0.1); color: var(--danger); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
+          PDF
+        </div>
+        <div>
+          <h2 style="font-size: 1.25rem; color: var(--secondary); margin: 0;">Project Research Report</h2>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Academic Documentation &bull; PDF Document</span>
+        </div>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.5rem;">
+        Complete academic project report covering problem formulation, literature review, MobileNetV2 transfer learning methodology, data preprocessing, training curves, test split evaluation, and future research directions.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <a href="{{ url_for('static', filename='pdfs/project_report.pdf') }}" target="_blank" rel="noopener" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        <span>📄 Open Report (PDF)</span>
+      </a>
+      <a href="{{ url_for('static', filename='pdfs/project_report.pdf') }}" download="mobile_classification_project_report.pdf" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        <span>⬇ Download</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Project Presentation Card -->
+  <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: rgba(245, 158, 11, 0.1); color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
+          PPT
+        </div>
+        <div>
+          <h2 style="font-size: 1.25rem; color: var(--secondary); margin: 0;">Presentation Slides</h2>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Defense Slide Deck &bull; PowerPoint (.pptx)</span>
+        </div>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.5rem;">
+        Comprehensive defense presentation slides outlining the motivation, MobileNetV2 architecture, inverted residual bottlenecks, data augmentation techniques, empirical test results, and the web application interface.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <a href="{{ url_for('static', filename='pdfs/presentation.pptx') }}" target="_blank" rel="noopener" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        <span>📊 Open / Download Slides (.pptx)</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Embedded Document Preview Section -->
+<section class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+    <h2 style="font-size: 1.25rem; color: var(--secondary); margin: 0;">Document Preview: Project Report</h2>
+    <a href="{{ url_for('static', filename='pdfs/project_report.pdf') }}" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+      Open Fullscreen &rarr;
+    </a>
+  </div>
+  <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: #525659; min-height: 600px;">
+    <iframe src="{{ url_for('static', filename='pdfs/project_report.pdf') }}" style="width: 100%; height: 650px; border: none;" title="Project Report PDF Preview">
+      <p>Your browser does not support inline PDF viewing. Please <a href="{{ url_for('static', filename='pdfs/project_report.pdf') }}">click here to download the PDF</a>.</p>
+    </iframe>
+  </div>
+</section>
+{% endblock %}
