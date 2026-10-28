@@ -47,6 +47,8 @@ app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "academic-deep-learning-secret-key-2026")
 CORS(app)
 
+INFERENCE_API_URL = os.environ.get("INFERENCE_API_URL", "").rstrip("/")
+
 # Initialize in-memory singleton inference engine
 engine = SmartphoneInferenceEngine(
     weights_path=WEIGHTS_PATH,
@@ -210,20 +212,9 @@ def api_predict():
     Secure prediction endpoint.
     Expects 'file' or 'image' multipart form-data.
     Validates MIME type, file extension, and file size before calling the inference engine.
+    Supports proxying to an external containerized backend via INFERENCE_API_URL (ideal for Vercel).
     """
-    # 1. Check if model is initialized
-    if not engine.is_ready:
-        # Attempt one reload in case training just completed
-        engine.reload()
-        if not engine.is_ready:
-            return jsonify({
-                "success": False,
-                "error": "Model weights have not been trained or loaded.",
-                "model_status": "untrained",
-                "remediation": "Execute 'python train.py' in the terminal to train the model on the smartphone dataset."
-            }), 503
-
-    # 2. Check for file presence
+    # 0. Check for file presence
     file_key = "file" if "file" in request.files else ("image" if "image" in request.files else None)
     if not file_key:
         return jsonify({
@@ -241,22 +232,49 @@ def api_predict():
     filename = secure_filename(file.filename)
     file_ext = Path(filename).suffix.lower()
 
-    # 3. Validate file extension
+    # Validate file extension
     if file_ext not in ALLOWED_EXTENSIONS:
         return jsonify({
             "success": False,
             "error": f"Unsupported file extension '{file_ext}'. Allowed formats: {', '.join(sorted(ALLOWED_EXTENSIONS))}"
         }), 400
 
-    # 4. Read bytes and execute inference
+    top_k = request.form.get("top_k", TOP_K_PREDICTIONS, type=int)
+
+    # 1. If external backend is specified (e.g. for Vercel serverless -> container backend)
+    if INFERENCE_API_URL:
+        try:
+            import requests
+            image_bytes = file.read()
+            files = {file_key: (filename, image_bytes, file.content_type or "image/jpeg")}
+            data = {"top_k": top_k}
+            resp = requests.post(f"{INFERENCE_API_URL}/api/predict", files=files, data=data, timeout=30)
+            return jsonify(resp.json()), resp.status_code
+        except Exception as e:
+            logger.error(f"Inference proxy error to {INFERENCE_API_URL}: {e}")
+            return jsonify({
+                "success": False,
+                "error": f"Failed to connect to backend inference service: {str(e)}"
+            }), 502
+
+    # 2. Local in-memory inference check
+    if not engine.is_ready:
+        engine.reload()
+        if not engine.is_ready:
+            return jsonify({
+                "success": False,
+                "error": "Model weights have not been trained or loaded.",
+                "model_status": "untrained",
+                "remediation": "For serverless deployments (Vercel), configure INFERENCE_API_URL pointing to your Docker/Render backend, or run locally via 'python app.py'."
+            }), 503
+
+    # 3. Read bytes and execute local inference
     try:
         image_bytes = file.read()
         if len(image_bytes) == 0:
             return jsonify({"success": False, "error": "Submitted file is empty (0 bytes)."}), 400
 
-        top_k = request.form.get("top_k", TOP_K_PREDICTIONS, type=int)
         prediction_result = engine.predict(image_bytes, top_k=top_k)
-
         status_code = 200 if prediction_result.get("success") else 422
         return jsonify(prediction_result), status_code
 
