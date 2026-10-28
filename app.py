@@ -42,10 +42,27 @@ from src.inference import SmartphoneInferenceEngine
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("WebApp")
 
+# Resolve templates and static folders for both local and Vercel execution
+_possible_template_dirs = [
+    PROJECT_ROOT / "templates",
+    PROJECT_ROOT / "api" / "templates",
+    Path("templates"),
+    Path("api/templates")
+]
+valid_template_dir = next((str(d) for d in _possible_template_dirs if d.exists()), "templates")
+
+_possible_static_dirs = [
+    PROJECT_ROOT / "static",
+    PROJECT_ROOT / "api" / "static",
+    Path("static"),
+    Path("api/static")
+]
+valid_static_dir = next((str(d) for d in _possible_static_dirs if d.exists()), "static")
+
 app = Flask(
     __name__,
-    template_folder=str(PROJECT_ROOT / "templates"),
-    static_folder=str(PROJECT_ROOT / "static")
+    template_folder=valid_template_dir,
+    static_folder=valid_static_dir
 )
 app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "academic-deep-learning-secret-key-2026")

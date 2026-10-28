@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Mobile Phone Model Classification Using Deep Learning{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-subtitle">Deep Learning & Computer Vision Semester Project</div>
+  <h1 class="hero-title">Mobile Phone Model Classification<br>Using Transfer Learning</h1>
+  <p class="hero-desc">
+    An end-to-end deep learning system designed to identify smartphone brands and exact models from uploaded images. 
+    Powered by MobileNetV2 pretrained on ImageNet with fine-tuned inverted residual blocks and a custom classification head.
+  </p>
+
+  <div style="margin-bottom: 1.5rem;">
+    {% if status.model_ready %}
+      <span class="status-pill ready">
+        <span class="status-dot"></span>
+        Model Status: Trained & Loaded ({{ status.num_classes }} Classes)
+      </span>
+    {% else %}
+      <span class="status-pill untrained">
+        <span class="status-dot"></span>
+        Model Status: Untrained Checkpoint Pending (Run: python train.py)
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="hero-actions">
+    <a href="/demo" class="btn btn-primary">Try the Classifier &rarr;</a>
+    <a href="/model" class="btn btn-outline">Explore Model Architecture</a>
+  </div>
+</section>
+
+<!-- Core Pillars Grid -->
+<section class="grid grid-3" style="margin-bottom: 2.5rem;">
+  <div class="card">
+    <h3 class="card-title">
+      <span>📱</span> Purpose & Applications
+    </h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Automated smartphone identification is vital for electronic commerce, device trade-in valuation, automated inventory management, and recycling triage. Manual identification is labor-intensive and prone to human error due to subtle exterior hardware differences.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">
+      <span>⚡</span> Transfer Learning Approach
+    </h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Instead of training from scratch with millions of parameters, we leverage <strong>MobileNetV2</strong> initialized with 1.4M ImageNet weights. The lower layers capture universal edge, texture, and contour filters, while fine-tuned upper layers specialize in camera layouts and brand chassis cues.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">
+      <span>🔬</span> Rigorous Evaluation
+    </h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Built with academic integrity: strict data leakage prevention, disjoint test-split evaluation, per-class classification reports (Precision, Recall, F1), and confusion matrix heatmaps. No synthetic claims or fake accuracy metrics.
+    </p>
+  </div>
+</section>
+
+<!-- Deep Learning Pipeline Overview -->
+<section class="card" style="margin-bottom: 2.5rem;">
+  <h2 style="font-size: 1.4rem; color: var(--secondary); margin-bottom: 1rem;">System Architecture Workflow</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: center;">
+    <div style="background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📷</div>
+      <strong style="display: block; margin-bottom: 0.25rem;">1. Image Ingestion</strong>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">RGB format validation, 224&times;224 bicubic scaling, MobileNet normalization</span>
+    </div>
+    <div style="background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🧠</div>
+      <strong style="display: block; margin-bottom: 0.25rem;">2. MobileNetV2 Backbone</strong>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Depthwise separable convolutions & inverted residual bottlenecks</span>
+    </div>
+    <div style="background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🎯</div>
+      <strong style="display: block; margin-bottom: 0.25rem;">3. Custom Dense Head</strong>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">GlobalAveragePooling2D, Batch Normalization, Dropout (0.3), ReLU Dense</span>
+    </div>
+    <div style="background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📊</div>
+      <strong style="display: block; margin-bottom: 0.25rem;">4. Softmax Probability</strong>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Categorical probability distribution and top-3 ranked confidence outputs</span>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

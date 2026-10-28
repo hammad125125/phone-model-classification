@@ -1,0 +1,67 @@
+{
+  "dataset_path": "C:\\Users\\Shehreyar\\Downloads\\mobile classification project\\dataset",
+  "status": "ready",
+  "splits": {
+    "train": {
+      "total": 70,
+      "per_class": {
+        "Apple_iPhone": 14,
+        "Google_Pixel": 14,
+        "OnePlus": 14,
+        "Samsung_Galaxy": 14,
+        "Xiaomi_Redmi": 14
+      }
+    },
+    "validation": {
+      "total": 15,
+      "per_class": {
+        "Apple_iPhone": 3,
+        "Google_Pixel": 3,
+        "OnePlus": 3,
+        "Samsung_Galaxy": 3,
+        "Xiaomi_Redmi": 3
+      }
+    },
+    "test": {
+      "total": 15,
+      "per_class": {
+        "Apple_iPhone": 3,
+        "Google_Pixel": 3,
+        "OnePlus": 3,
+        "Samsung_Galaxy": 3,
+        "Xiaomi_Redmi": 3
+      }
+    }
+  },
+  "classes": [
+    "Apple_iPhone",
+    "Google_Pixel",
+    "OnePlus",
+    "Samsung_Galaxy",
+    "Xiaomi_Redmi"
+  ],
+  "num_classes": 5,
+  "class_to_idx": {
+    "Apple_iPhone": 0,
+    "Google_Pixel": 1,
+    "OnePlus": 2,
+    "Samsung_Galaxy": 3,
+    "Xiaomi_Redmi": 4
+  },
+  "idx_to_class": {
+    "0": "Apple_iPhone",
+    "1": "Google_Pixel",
+    "2": "OnePlus",
+    "3": "Samsung_Galaxy",
+    "4": "Xiaomi_Redmi"
+  },
+  "total_images": 100,
+  "corrupted_images_count": 0,
+  "class_balance": {
+    "min_class_count": 14,
+    "max_class_count": 14,
+    "imbalance_ratio": 1.0
+  },
+  "leakage_warnings": [],
+  "warnings": []
+}

@@ -1,0 +1,24 @@
+{
+  "classes": [
+    "Apple_iPhone",
+    "Google_Pixel",
+    "OnePlus",
+    "Samsung_Galaxy",
+    "Xiaomi_Redmi"
+  ],
+  "num_classes": 5,
+  "class_to_idx": {
+    "Apple_iPhone": 0,
+    "Google_Pixel": 1,
+    "OnePlus": 2,
+    "Samsung_Galaxy": 3,
+    "Xiaomi_Redmi": 4
+  },
+  "idx_to_class": {
+    "0": "Apple_iPhone",
+    "1": "Google_Pixel",
+    "2": "OnePlus",
+    "3": "Samsung_Galaxy",
+    "4": "Xiaomi_Redmi"
+  }
+}
